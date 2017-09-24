@@ -31,6 +31,22 @@ In short you will:
 2.  Upload the sketch (from this repo) The sketch is setup for a 120 pixel WS2812B GRB LED Strip.   
     (change the applicable options in "definitions.h" to your desire)
 3.  Patch FastLED Library
+
+```arduino
+#define FASTLED_USE_PROGMEM 1
+// Note, you need to patch FastLEDs in order to use this.  You'll get an
+// error related to <avr\pgmspace.h>. Saves more than 3k given the palettes
+//
+// Simply edit <fastled_progmem.h> and update the include (Line ~29):
+//      #if FASTLED_INCLUDE_PGMSPACE == 1
+//      #if (defined(__AVR__))
+//      #include <avr\pgmspace.h>
+//      #else
+//      #include <pgmspace.h>
+//      #endif
+//      #endif
+```
+
 4.  On first launch, the ESP8266 will advertise it's own WiFi network for you to connect to, once you connect to it, launch your browser
     and the web interface is self explanatory.  (If the interface doesn't load, type in "192.168.4.1" into your browser and hit go)
 5.  Once the ESP is on your wifi network, you can then upload the required files for the web interface by typing the in IP address
