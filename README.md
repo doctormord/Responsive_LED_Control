@@ -49,7 +49,15 @@ Forked from Russel, i removed Adafruit Neopixel references and library calls.
 * speedup the UI alot by pulling the materialize stuff (.css/.js) from server and using .gz compressed files for the rest
 * made the UI more responsive with grouped sections and buttons
 * added some more palettes
-* integrated Arduino OTA 
+* integrated Arduino OTA
+
+Large Screen (Desktop)
+
+![Large Screen](https://github.com/doctormord/Responsive_LED_Control/raw/master/documentation/large50.png)
+
+Small Screen (Mobile)
+
+![Small Screen](https://github.com/doctormord/Responsive_LED_Control/raw/master/documentation/small50.png)
 
 
 ~~I edited clockless_esp8266.h (in the FastLED platforms folder) and 
