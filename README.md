@@ -1,4 +1,4 @@
-# doctormord's Responsive Led Controll
+# doctormord's Responsive Led Control
 I mixed the work of [McLighting](https://github.com/toblum/McLighting), [Russell](https://github.com/russp81/LEDLAMP_FASTLEDs) and [Jake's "Grisworld"](https://github.com/jake-b/Griswold-LED-Controller) with [FastLED](https://github.com/FastLED/FastLED) (FastLED library 3.1.3 as of this writing), the colorjs colorpicker, color spectrums created via FastLED Palette Knife, and some additional strip animations (included in the Arduino Sketch above).
 
 FastLED 3.1.3 library:
