@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Getting colors</title>
+</head>
+<body>
+
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+<script src="jscolor.js"></script>
+
+<script>
+// Settings
+	var host = window.location.hostname;
+	//host = "192.168.0.24";
+
+	var ws_url = 'ws://' + host + ':81';
+	var connection;
+	var ws_waiting = 0;
+
+	// ******************************************************************
+	// Side navigation
+	// ******************************************************************
+    // $('.button-collapse').sideNav();
+	
+	// Navlinks
+// 	$('#mc-nav').on('click', '.mc-navlink', function(){
+// 		console.log("Navigate to pane: ", $(this).data("pane"));
+// 		showPane($(this).data("pane"));
+// 	});
+	
+// 	function showPane(pane) {
+// 		$('.mc_pane').addClass('hide');
+// 		$('#' + pane).removeClass('hide');
+// 		$('.button-collapse').sideNav('hide');
+		
+// 		if (pane == "pane2") {
+// 			setMainColor();
+// 		}
+// 	}
+	
+	
+	// ******************************************************************
+	// init()
+	// ******************************************************************
+	function init() {
+		console.log("Connection websockets to:", ws_url);
+		connection = new WebSocket(ws_url, ['arduino']);
+				
+		// When the connection is open, send some data to the server
+		connection.onopen = function () {
+			//connection.send('Ping'); // Send the message 'Ping' to the server
+			console.log('WebSocket Open');
+		// 	showPane('pane1');
+		};
+
+		// Log errors
+		connection.onerror = function (error) {
+			console.log('WebSocket Error ' + error);
+			$('#mc-wsloader').addClass('hide');
+			$('#mc-wserror').removeClass('hide');
+		};
+
+		// Log messages from the server
+		connection.onmessage = function (e) {
+			console.log('WebSocket from server: ' + e.data);
+			ws_waiting = 0;
+		};
+	}
+	
+	function wsSendCommand(cmd) {
+		console.log("Send WebSocket command:", cmd);
+		if (ws_waiting == 0)  {
+			connection.send(cmd);
+			ws_waiting++;
+		} else {
+			console.log("++++++++ WS call waiting, skip")
+		}
+	}	
+	
+	function componentToHex(c) {
+		//var hex = c.toString(16);
+		//return hex.length == 1 ? "0" + hex : hex;
+		return  ("0"+(Number(c).toString(16))).slice(-2).toUpperCase();
+	}
+	
+	function wsSetMainColor(hexColor) {
+	console.log("wsSetMainColor() Set main colors to:", hexColor);
+	wsSendCommand("#" + hexColor);
+	}
+	
+	function wsSetAll(hexColor) {
+	console.log("wsSetAll() Set all colors to:", hexColor);
+	wsSendCommand("*" + hexColor);
+	}
+	// ******************************************************************
+	// main
+	// ******************************************************************
+
+
+
+function update(picker) {
+    document.getElementById('hex-str').innerHTML = picker.toHEXString();
+    document.getElementById('rgb-str').innerHTML = picker.toRGBString();
+
+    document.getElementById('rgb').innerHTML =
+        Math.round(picker.rgb[0]) + ', ' +
+        Math.round(picker.rgb[1]) + ', ' +
+        Math.round(picker.rgb[2]);
+
+    document.getElementById('hsv').innerHTML =
+        Math.round(picker.hsv[0]) + '&deg;, ' +
+        Math.round(picker.hsv[1]) + '%, ' +
+        Math.round(picker.hsv[2]) + '%';
+
+    var red = Math.round(picker.rgb[0]);
+    var green = Math.round(picker.rgb[1]);
+    var blue = Math.round(picker.rgb[2]);
+        
+		var mainColorHex = componentToHex(red) + componentToHex(green) + componentToHex(blue);
+
+		wsSetAll(mainColorHex);
+}
+
+init();
+
+</script>
+
+    <div style="width:800px; margin:0 auto;">
+
+      <br>
+    toHEXString = <span id="hex-str"></span><br />
+    toRGBString = <span id="rgb-str"></span><br />
+    R, G, B = <span id="rgb"></span><br />
+    H, S, V = <span id="hsv"></span>
+    </div>
+    
+<!--<input class="jscolor {onFineChange:'update(this)'}" value="ffcc00">-->
+<input readonly = "true" value="ffcc00" class="jscolor {onFineChange:'update(this)',width:800, height:450, position:'bottom',
+    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'}">
+    
+</body>
+
+</html>

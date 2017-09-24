@@ -1,0 +1,41 @@
+.isactive {
+    color: #fa3;
+}
+
+.switch label input[type=checkbox]:checked+.lever {
+  background-color: #fa3;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+  background-color: #f93;
+}
+
+.noUI-connect {
+  background: #f93 ;
+}
+
+.range-label{
+  background-color: #f93;
+}
+
+.noUI-background {
+  background: #f93;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    background-color: #455a64;
+  }
+input[type=range]::-moz-range-thumb {
+    background-color: #455a64;
+}
+input[type=range]::-ms-thumb {
+    background-color: #455a64;
+}
+
+/***** These are to edit the thumb and the text inside the thumb *****/
+input[type=range] + .thumb {
+    background-color: #455a64;
+}
+input[type=range] + .thumb.active .value {
+    color: white;
+}
