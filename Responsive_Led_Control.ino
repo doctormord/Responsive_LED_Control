@@ -77,6 +77,13 @@ void configModeCallback(WiFiManager *myWiFiManager) {
   DBG_OUTPUT_PORT.println(myWiFiManager->getConfigPortalSSID());
   // entered config mode, make led toggle faster
   ticker.attach(0.2, tick);
+  
+  // Show USER that module can't connect to stored WiFi
+  uint16_t i;
+  for (i = 0; i < NUM_LEDS; i++) {
+    leds[i].setRGB(0, 0, 50);
+  }
+  FastLED.show(); 
 }
 
 // ***************************************************************************
@@ -126,6 +133,27 @@ void setup() {
   // start ticker with 0.5 because we start in AP mode and try to connect
   ticker.attach(0.5, tick);
 
+ // ***************************************************************************
+  // Setup: FASTLED
+  // ***************************************************************************
+  delay(500);  // 500ms delay for recovery
+
+  // limit my draw to 2.1A at 5v of power draw
+  FastLED.setMaxPowerInVoltsAndMilliamps(5,MAX_CURRENT);
+
+  // maximum refresh rate
+  FastLED.setMaxRefreshRate(FASTLED_HZ);
+
+  // tell FastLED about the LED strip configuration
+  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS)
+      .setCorrection(TypicalLEDStrip);
+  
+  // FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds,
+  // NUM_LEDS).setCorrection(TypicalLEDStrip);
+  // set master brightness control
+  FastLED.setBrightness(settings.overall_brightness);
+  
+
   // ***************************************************************************
   // Setup: WiFiManager
   // ***************************************************************************
@@ -143,6 +171,8 @@ void setup() {
   // if it does not connect it starts an access point with the specified name
   // here  "AutoConnectAP"
   // and goes into a blocking loop awaiting configuration
+
+  
   if (!wifiManager.autoConnect(hostname)) {
     DBG_OUTPUT_PORT.println("failed to connect and hit timeout");
     // reset and try again, or maybe put it to deep sleep
@@ -157,7 +187,7 @@ void setup() {
   digitalWrite(BUILTIN_LED, LOW);
 
   // ***************************************************************************
-  // Setup: WiFiManager
+  // Setup: ArduinoOTA
   // ***************************************************************************
   ArduinoOTA.setHostname(hostname);
   ArduinoOTA.onStart([]() {
@@ -199,26 +229,7 @@ void setup() {
   DBG_OUTPUT_PORT.print("IP address: ");
   DBG_OUTPUT_PORT.println(WiFi.localIP());
 
-  // ***************************************************************************
-  // Setup: FASTLED
-  // ***************************************************************************
-  delay(3000);  // 3 second delay for recovery
-
-  // limit my draw to 2.1A at 5v of power draw
-  FastLED.setMaxPowerInVoltsAndMilliamps(5,MAX_CURRENT);
-
-  // maximum refresh rate
-  FastLED.setMaxRefreshRate(FASTLED_HZ);
-
-  // tell FastLED about the LED strip configuration
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS)
-      .setCorrection(TypicalLEDStrip);
-  
-  // FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds,
-  // NUM_LEDS).setCorrection(TypicalLEDStrip);
-  // set master brightness control
-  FastLED.setBrightness(settings.overall_brightness);
-
+ 
   // ***************************************************************************
   // Setup: MDNS responder
   // ***************************************************************************
@@ -252,11 +263,6 @@ void setup() {
   // Setup: SPIFFS Webserver handler
   // ***************************************************************************
 
-  // Disable Nagle feature in Core Lib <= 2.3.0
-  
-  WiFiClient client;
-  client.setNoDelay(1);
-  
   // list directory
   server.on("/list", HTTP_GET, handleFileList);
   
@@ -607,19 +613,22 @@ void loop() {
     webSocket.loop();       // Handle websocket traffic
     ArduinoOTA.handle();    // Handle OTA requests.
 #ifdef REMOTE_DEBUG
-    Debug.handle();         // Handle telent server
+    Debug.handle();         // Handle telnet server
 #endif         
     yield();                // Yield for ESP8266 stuff
 
-    if (WiFi.status() != WL_CONNECTED) {
+ if (WiFi.status() != WL_CONNECTED) {
       // Blink the LED quickly to indicate WiFi connection lost.
-      EVERY_N_MILLISECONDS(250) {
-        int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin      
-        digitalWrite(BUILTIN_LED, !state);
-      }
+      ticker.attach(0.1, tick);
+     
+      //EVERY_N_MILLISECONDS(1000) {
+      //  int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin      
+      //  digitalWrite(BUILTIN_LED, !state);
+      // }
     } else {      
+      ticker.detach();
       // Light on-steady indicating WiFi is connected.
-      digitalWrite(BUILTIN_LED, false);
+      //digitalWrite(BUILTIN_LED, false);
     }
     
   } while (millis() < continueTime);
