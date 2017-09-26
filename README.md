@@ -33,18 +33,18 @@ In short you will:
 3.  Patch FastLED Library
 
 ```arduino
-#define FASTLED_USE_PROGMEM 1
 // Note, you need to patch FastLEDs in order to use this.  You'll get an
 // error related to <avr\pgmspace.h>. Saves more than 3k given the palettes
 //
 // Simply edit <fastled_progmem.h> and update the include (Line ~29):
-//      #if FASTLED_INCLUDE_PGMSPACE == 1
-//      #if (defined(__AVR__))
-//      #include <avr\pgmspace.h>
-//      #else
-//      #include <pgmspace.h>
-//      #endif
-//      #endif
+
+#if FASTLED_INCLUDE_PGMSPACE == 1
+#if (defined(__AVR__))
+#include <avr\pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+#endif
 ```
 
 4.  On first launch, the ESP8266 will advertise it's own WiFi network for you to connect to, once you connect to it, launch your browser
