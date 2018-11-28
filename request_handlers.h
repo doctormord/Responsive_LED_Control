@@ -214,6 +214,30 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         webSocket.sendTXT(num, "OK");
       } 
 
+      // # ==> Set number of LEDs
+      if (payload[0] == '&') {
+        uint16_t b = (uint16_t) strtol((const char *) &payload[1], NULL, 10);
+        if (b <= 0) {
+          b=1;
+        }
+  
+        settings.num_leds = b;
+        DBG_OUTPUT_PORT.printf("WS: Set number of leds to: [%u]\n", settings.num_leds);
+        webSocket.sendTXT(num, "OK");
+      } 
+
+      // # ==> Set maximum LED string current
+      if (payload[0] == '<') {
+        uint16_t b = (uint16_t) strtol((const char *) &payload[1], NULL, 10);
+        if (b <= 10) {
+          b = 10;
+        }
+ 
+        settings.max_current = b;
+        DBG_OUTPUT_PORT.printf("WS: Set LED current to: [%u]\n", settings.max_current);
+        webSocket.sendTXT(num, "OK");
+      }
+
       // # ==> Set fade glitter density
       if (payload[0] == '+') {
         uint8_t b = (uint8_t) strtol((const char *) &payload[1], NULL, 10);
@@ -232,7 +256,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         settings.main_color.green = ((rgb >> 8) & 0xFF);
         settings.main_color.blue = ((rgb >> 0) & 0xFF);
 
-        for (int i = 0; i < NUM_LEDS; i++) {
+        for (int i = 0; i < settings.num_leds; i++) {
           leds[i] = CRGB(settings.main_color.red, settings.main_color.green, settings.main_color.blue);
         }
         FastLED.show();
@@ -248,13 +272,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         uint64_t rgb = (uint64_t) strtol((const char *) &payload[1], NULL, 16);
 
         uint8_t led =          ((rgb >> 24) & 0xFF);
-        if (led < NUM_LEDS) {
+        if (led < settings.num_leds) {
           ledstates[led].red =   ((rgb >> 16) & 0xFF);
           ledstates[led].green = ((rgb >> 8)  & 0xFF);
           ledstates[led].blue =  ((rgb >> 0)  & 0xFF);
           DBG_OUTPUT_PORT.printf("WS: Set single led [%u] to [%u] [%u] [%u]!\n", led, ledstates[led].red, ledstates[led].green, ledstates[led].blue);
 
-          for (uint8_t i = 0; i < NUM_LEDS; i++) {
+          for (uint8_t i = 0; i < settings.num_leds; i++) {
             leds[i] = CRGB(ledstates[i].red, ledstates[i].green, ledstates[i].blue);
             
           }

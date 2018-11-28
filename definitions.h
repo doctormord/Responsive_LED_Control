@@ -20,7 +20,7 @@
 // The LEDLAMP project is a fork of the McLighting Project at
 //        https://github.com/toblum/McLighting
 
-//#define FASTLED_ALLOW_INTERRUPTS 0
+#define FASTLED_ALLOW_INTERRUPTS 0
 
 /// Serial
 #define DEBUG_WEBSOCKETS(...) Serial.printf( __VA_ARGS__ )
@@ -53,8 +53,8 @@
 //#define CLK_PIN   4
 #define LED_TYPE WS2812B
 #define COLOR_ORDER GRB
-#define NUM_LEDS 120
-#define MAX_CURRENT 2000  // limit to max current
+ #define NUM_LEDS 1000 // dummy for initial setup the fastled routines
+// #define MAX_CURRENT 1800  // limit to max current
 #define FASTLED_HZ 100    // maximum FASTLED refresh rate ( default = 400)
 CRGB leds[NUM_LEDS];
 
@@ -141,8 +141,8 @@ LEDState ledstates[NUM_LEDS]; // Get an array of led states to store the state o
 //LEDState glitter_color;             // Store the "glitter color" of the strip for glitter mode
 
 // Supporting the "Glitter Wipe" effect
-#define SPARKLE_SPREAD (_max(NUM_LEDS/80,3))
-#define WIPE_SPEED  (_max(NUM_LEDS/120,1))
+#define SPARKLE_SPREAD (_max(settings.num_leds/80,3))
+#define WIPE_SPEED  (_max(settings.num_leds/120,1))
 int16_t wipePos = 0;
 
 #ifdef REMOTE_DEBUG

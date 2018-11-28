@@ -36,7 +36,7 @@ extern WebSocketsServer webSocket;
 
 void addGlitter(fract8 chanceOfGlitter) {
   if (random8() < chanceOfGlitter) {
-    leds[random16(NUM_LEDS)] +=
+    leds[random16(settings.num_leds)] +=
         CRGB(settings.glitter_color.red, settings.glitter_color.green,
              settings.glitter_color.blue);
   }
@@ -44,7 +44,7 @@ void addGlitter(fract8 chanceOfGlitter) {
 
 void rainbow() {
   // FastLED's built-in rainbow generator
-  fill_rainbow(leds, NUM_LEDS, gHue, 7);
+  fill_rainbow(leds, settings.num_leds, gHue, 7);
 
   // if (settings.glitter_on == true){addGlitter(settings.glitter_density);}
   // frame has been created, now show it
@@ -55,9 +55,9 @@ void rainbow() {
 
 void confetti() {
   // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy(leds, NUM_LEDS, settings.ftb_speed);
+  fadeToBlackBy(leds, settings.num_leds, settings.ftb_speed);
   for (int x=0; x<settings.confetti_dens; x++) {
-    int pos = random16(NUM_LEDS);
+    int pos = random16(settings.num_leds);
     leds[pos] += CHSV(gHue + random8(64), 200, settings.effect_brightness);
   }
   // if (settings.glitter_on == true){addGlitter(settings.glitter_density);}
@@ -69,8 +69,8 @@ void confetti() {
 
 void sinelon() {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy(leds, NUM_LEDS, settings.ftb_speed);
-  int pos = beatsin16(13, 0, NUM_LEDS);
+  fadeToBlackBy(leds, settings.num_leds, settings.ftb_speed);
+  int pos = beatsin16(13, 0, settings.num_leds);
   leds[pos] += CHSV(gHue, 255, settings.effect_brightness);
   // if (settings.glitter_on == true){addGlitter(settings.glitter_density);}
   // frame has been created, now show it
@@ -84,7 +84,7 @@ void bpm() {
   uint8_t BeatsPerMinute = 62;
   CRGBPalette16 palette = PartyColors_p;
   uint8_t beat = beatsin8(BeatsPerMinute, 64, settings.effect_brightness);
-  for (int i = 0; i < NUM_LEDS; i++) {  // 9948
+  for (int i = 0; i < settings.num_leds; i++) {  // 9948
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
   // if (settings.glitter_on == true){addGlitter(settings.glitter_density);}
@@ -97,10 +97,10 @@ void bpm() {
 
 void juggle() {
   // eight colored dots, weaving in and out of sync with each other
-  fadeToBlackBy(leds, NUM_LEDS, settings.ftb_speed);
+  fadeToBlackBy(leds, settings.num_leds, settings.ftb_speed);
   int dothue = 0;
   for (int i = 0; i < 8; i++) {
-    leds[beatsin16(i + 7, 0, NUM_LEDS)] |=
+    leds[beatsin16(i + 7, 0, settings.num_leds)] |=
         CHSV(dothue, 200, settings.effect_brightness);
     dothue += 32;
   }
@@ -119,7 +119,7 @@ int wipeInProgress = 0;
 void FillLEDsFromPaletteColors(CRGBPalette16 palette, uint8_t paletteStartIndex, uint16_t endingLEDIndex=0xFFFF) {
   uint8_t colorIndex = paletteStartIndex;
 
-  for (int i = 0; i < NUM_LEDS; i++) {
+  for (int i = 0; i < settings.num_leds; i++) {
     if (i > endingLEDIndex) return;  //stop condition
     
     // leds[i] = ColorFromPalette( currentPalette, colorIndex + sin8(i*16),
@@ -161,7 +161,7 @@ void colorWipe() {
   static CRGB currentColor = CHSV(gHue+60, 255, settings.effect_brightness);
 
   // Wrap around if necessary
-  if (wipePos >= NUM_LEDS) {
+  if (wipePos >= settings.num_leds) {
     wipePos = 0;
     prevColor = currentColor;
     gHue += 60;
@@ -173,7 +173,7 @@ void colorWipe() {
     leds[x] = currentColor;
   }
   // Render the second half
-  for (int x=wipePos; x<NUM_LEDS; x++) {
+  for (int x=wipePos; x<settings.num_leds; x++) {
     leds[x] = prevColor;
   }
 
@@ -181,7 +181,7 @@ void colorWipe() {
   if (settings.glitter_wipe_on) {
     for (int x=0; x < 3; x++) {
       int speckle = wipePos + random(-SPARKLE_SPREAD,SPARKLE_SPREAD);
-      if (speckle >= 0 && speckle < NUM_LEDS) {
+      if (speckle >= 0 && speckle < settings.num_leds) {
           leds[speckle] +=  CRGB(settings.glitter_color.red, settings.glitter_color.green,
                settings.glitter_color.blue);
       }    
@@ -219,7 +219,7 @@ void palette_anims() {
   FillLEDsFromPaletteColors(currentPalette,startIndex);
 
   if (settings.glitter_wipe_on && wipeInProgress) {
-    if (wipePos >= NUM_LEDS) {
+    if (wipePos >= settings.num_leds) {
       DBG_OUTPUT_PORT.println("End glitter wipe");
       wipeInProgress = false;
       wipePos = 0;
@@ -234,7 +234,7 @@ void palette_anims() {
       FillLEDsFromPaletteColors(targetPalette,startIndex, wipePos);
       for (int x=0; x < 3; x++) {
         int speckle = wipePos + random(-SPARKLE_SPREAD,SPARKLE_SPREAD);
-        if (speckle >= 0 && speckle < NUM_LEDS) {
+        if (speckle >= 0 && speckle < settings.num_leds) {
             leds[speckle] +=  CRGB(settings.glitter_color.red, settings.glitter_color.green,
                  settings.glitter_color.blue);
         }  
@@ -250,14 +250,14 @@ void palette_anims() {
 
 void one_color_allHSV(int ahue,
                       int abright) {  // SET ALL LEDS TO ONE COLOR (HSV)
-  for (int i = 0; i < NUM_LEDS; i++) {
+  for (int i = 0; i < settings.num_leds; i++) {
     leds[i] = CHSV(ahue, 255, abright);
   }
 }
 
 int wrap(int step) {
-  if (step < 0) return NUM_LEDS + step;
-  if (step > NUM_LEDS - 1) return step - NUM_LEDS;
+  if (step < 0) return settings.num_leds + step;
+  if (step > settings.num_leds - 1) return step - settings.num_leds;
   return step;
 }
 
@@ -269,14 +269,14 @@ void ripple() {
   } else {
     currentBg--;
   }
-  for (uint16_t l = 0; l < NUM_LEDS; l++) {
+  for (uint16_t l = 0; l < settings.num_leds; l++) {
     leds[l] = CHSV(currentBg, 255,
                    settings.effect_brightness);  // strip.setPixelColor(l,
                                                  // Wheel(currentBg, 0.1));
   }
 
   if (step == -1) {
-    center = random(NUM_LEDS);
+    center = random(settings.num_leds);
     color = random(256);
     step = 0;
   }
@@ -329,8 +329,8 @@ void ripple() {
 //RIPPLE*****************************************************
 
 void comet() {
-  fadeToBlackBy(leds, NUM_LEDS, settings.ftb_speed);
-  lead_dot = beatsin16(int(float(settings.fps / 3)), 0, NUM_LEDS);
+  fadeToBlackBy(leds, settings.num_leds, settings.ftb_speed);
+  lead_dot = beatsin16(int(float(settings.fps / 3)), 0, settings.num_leds);
   leds[lead_dot] = CHSV(dothue, 200, 255);
   dothue += 8;
   // if (settings.glitter_on == true){addGlitter(settings.glitter_density);}
@@ -342,8 +342,8 @@ void theaterChase() {
   static int8_t frame = 0;
 
   // turn off the previous frame's led
-  for (int i = 0; i < NUM_LEDS; i = i + 3) {
-    if (i + frame < NUM_LEDS) {
+  for (int i = 0; i < settings.num_leds; i = i + 3) {
+    if (i + frame < settings.num_leds) {
       leds[i + frame] = CRGB(0, 0, 0);  // turn every third pixel off
     }
   }
@@ -353,8 +353,8 @@ void theaterChase() {
   if (frame > 2) frame = 0;
 
   // turn on the current frame's leds
-  for (int i = 0; i < NUM_LEDS; i = i + 3) {
-    if (i + frame < NUM_LEDS) {
+  for (int i = 0; i < settings.num_leds; i = i + 3) {
+    if (i + frame < settings.num_leds) {
       leds[i + frame] =
           CRGB(settings.main_color.red, settings.main_color.green,
                settings.main_color.blue);  // turn every third pixel on
@@ -392,7 +392,7 @@ CRGB hsb2rgbAN1(uint16_t index, uint8_t sat, uint8_t bright) {
 
 void _tvUpdateLed (int led, int brightness) {
   ledBrightness[led] = brightness;
-  for (int i=0; i<NUM_LEDS; i++) {
+  for (int i=0; i<settings.num_leds; i++) {
     uint16_t index = (i%3 == 0) ? 400 : random(0,767);
     ledHue[led] = index;
   }
@@ -409,7 +409,7 @@ void tv() {
       dipCount++;      
     }
     if (currentMillis-previousMillis<twitch) {
-      led=random(0, NUM_LEDS-1);
+      led=random(0, settings.num_leds-1);
       analogLevel=random(50,255);// set the range of the 3 pwm leds
       ledState = ledState == LOW ? HIGH: LOW; // if the LED is off turn it on and vice-versa:
       
@@ -429,7 +429,7 @@ void tv() {
     //DBG_OUTPUT_PORT.println("Dip Time");
     currentDipTime = millis();
     if (currentDipTime - dipStartTime < darkTime) {
-      for (int i=3; i<NUM_LEDS; i++) {
+      for (int i=3; i<settings.num_leds; i++) {
         _tvUpdateLed(i, 0);
       }
     } else {
@@ -446,7 +446,7 @@ void tv() {
     sat = random(180, 220);
   }
   
-  for (int i=0; i<NUM_LEDS; i++) {
+  for (int i=0; i<settings.num_leds; i++) {
     uint16_t index = (i%3 == 0) ? 400 : random(0,767);
     //leds[i] = ((index >> 8) % 3, 200, ledBrightness[i]);
     
@@ -469,7 +469,7 @@ void tv() {
 //
 // Temperature is in arbitrary units from 0 (cold black) to 255 (white hot).
 //
-// This simulation scales it self a bit depending on NUM_LEDS; it should look
+// This simulation scales it self a bit depending on settings.num_leds; it should look
 // "OK" on anywhere from 20 to 100 LEDs without too much tweaking. 
 //
 // I recommend running this simulation at anywhere from 30-100 frames per second,
@@ -505,14 +505,14 @@ void fire2012()
   static byte heat2[NUM_LEDS];
 
   // Step 1.  Cool down every cell a little
-    for( int i = 0; i < NUM_LEDS; i++) {
-      //heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / NUM_LEDS) + 2)); // original with COOLING
-      heat[i] = qsub8( heat[i],  random8(0, ((settings.ftb_speed * 20) / NUM_LEDS) + 2)); // modified with FTBspeed
-      heat2[i] = qsub8( heat2[i],  random8(0, ((settings.ftb_speed * 20) / NUM_LEDS) + 2)); // modified with FTBspeed
+    for( int i = 0; i < settings.num_leds; i++) {
+      //heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / settings.num_leds) + 2)); // original with COOLING
+      heat[i] = qsub8( heat[i],  random8(0, ((settings.ftb_speed * 20) / settings.num_leds) + 2)); // modified with FTBspeed
+      heat2[i] = qsub8( heat2[i],  random8(0, ((settings.ftb_speed * 20) / settings.num_leds) + 2)); // modified with FTBspeed
     }
   
     // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-    for( int k= NUM_LEDS - 1; k >= 2; k--) {
+    for( int k= settings.num_leds - 1; k >= 2; k--) {
       
       heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
       heat2[k] = (heat2[k - 1] + heat2[k - 2] + heat2[k - 2] ) / 3;
@@ -529,11 +529,11 @@ void fire2012()
     }
 
     // Step 4.  Map from heat cells to LED colors
-    for( int j = 0; j < (NUM_LEDS / 2); j++) {
+    for( int j = 0; j < (settings.num_leds / 2); j++) {
       CRGB color = HeatColor( heat[j]);
       int pixelnumber;
       if( gReverseDirection ) {
-        pixelnumber = (NUM_LEDS-1) - j;
+        pixelnumber = (settings.num_leds-1) - j;
       } else {
         pixelnumber = j;
       }
@@ -541,15 +541,15 @@ void fire2012()
     }
 
     // Step 4.  Map from heat cells to LED colors
-    for( int j = 0; j < (NUM_LEDS / 2); j++) {
+    for( int j = 0; j < (settings.num_leds / 2); j++) {
       CRGB color = HeatColor( heat2[j]);
       int pixelnumber;
-      pixelnumber = (NUM_LEDS-1) - j;
+      pixelnumber = (settings.num_leds-1) - j;
       leds[pixelnumber] = color;
     }
 
   if (_firerainbow) {
-    for( int j = 0; j < (NUM_LEDS); j++) {
+    for( int j = 0; j < (settings.num_leds); j++) {
       leds[j] += CHSV(gHue, 255, settings.effect_brightness); // set effect brightness
     }
     _firerainbow = false;
@@ -578,7 +578,7 @@ void fireworks() {
 
 
 
-// fadeToBlackBy( leds, NUM_LEDS, ftb_speed);
+// fadeToBlackBy( leds, settings.num_leds, ftb_speed);
 
  
   uint32_t px_rgb = 0;
@@ -587,7 +587,7 @@ void fireworks() {
   byte px_b = 0;
   byte px_boost = 200;
 
-  for(uint16_t i=0; i < NUM_LEDS; i++) {
+  for(uint16_t i=0; i < settings.num_leds; i++) {
 
     
 
@@ -604,7 +604,7 @@ void fireworks() {
   //leds[0].setRGB(px_r, px_g, px_b);
 
 // set brightness(i) = ((brightness(i-1)/2 + brightness(i+1)) / 2) + brightness(i)
-    for(uint16_t i=1; i < NUM_LEDS-1; i++) {
+    for(uint16_t i=1; i < settings.num_leds-1; i++) {
     leds[i].r = ((
             (leds[i-1].r  >> 1) +
             leds[i+1].r ) >> 1) +
@@ -622,9 +622,9 @@ void fireworks() {
   }
 
   // last LED has only one neighbour
-  leds[NUM_LEDS-1].r = ((leds[NUM_LEDS-2].r >> 2) + leds[NUM_LEDS-1].r);
-  leds[NUM_LEDS-1].g = ((leds[NUM_LEDS-2].g >> 2) + leds[NUM_LEDS-1].g);
-  leds[NUM_LEDS-1].b = ((leds[NUM_LEDS-2].b >> 2) + leds[NUM_LEDS-1].b);
+  leds[settings.num_leds-1].r = ((leds[settings.num_leds-2].r >> 2) + leds[settings.num_leds-1].r);
+  leds[settings.num_leds-1].g = ((leds[settings.num_leds-2].g >> 2) + leds[settings.num_leds-1].g);
+  leds[settings.num_leds-1].b = ((leds[settings.num_leds-2].b >> 2) + leds[settings.num_leds-1].b);
 
 px_r = random8();
 px_g = random8();
@@ -632,10 +632,10 @@ px_b = random8();
 
 
   
-    for(uint16_t i=0; i<_max(1,NUM_LEDS/20); i++) {
+    for(uint16_t i=0; i<_max(1,settings.num_leds/20); i++) {
       if(random8(settings.show_length + 4) == 0) {
         //Adafruit_NeoPixel::setPixelColor(random(_led_count), _mode_color);
-        byte pixel = random(NUM_LEDS);
+        byte pixel = random(settings.num_leds);
         if(_singlecolor){
           leds[pixel] = CRGB(settings.main_color.red,settings.main_color.green,settings.main_color.blue); // tails are in single color from set color on web interface
         } else if(_rainbow) {

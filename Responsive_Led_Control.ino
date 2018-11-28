@@ -36,7 +36,7 @@
 #include <WiFiClient.h>
 
 #include <Ticker.h>
-#include "RemoteDebug.h" //https://github.com/JoaoLopesF/RemoteDebug
+//#include "RemoteDebug.h" //https://github.com/JoaoLopesF/RemoteDebug
 
 #include <WebSockets.h>  //https://github.com/Links2004/arduinoWebSockets
 #include <WebSocketsServer.h>
@@ -80,7 +80,7 @@ void configModeCallback(WiFiManager *myWiFiManager) {
   
   // Show USER that module can't connect to stored WiFi
   uint16_t i;
-  for (i = 0; i < NUM_LEDS; i++) {
+  for (i = 0; i < 2; i++) {
     leds[i].setRGB(0, 0, 50);
   }
   FastLED.show(); 
@@ -139,13 +139,13 @@ void setup() {
   delay(500);  // 500ms delay for recovery
 
   // limit my draw to 2.1A at 5v of power draw
-  FastLED.setMaxPowerInVoltsAndMilliamps(5,MAX_CURRENT);
+  FastLED.setMaxPowerInVoltsAndMilliamps(5,settings.max_current);
 
   // maximum refresh rate
   FastLED.setMaxRefreshRate(FASTLED_HZ);
 
   // tell FastLED about the LED strip configuration
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS)
+  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, settings.num_leds)
       .setCorrection(TypicalLEDStrip);
   
   // FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds,
@@ -163,25 +163,30 @@ void setup() {
   // reset settings - for testing
   // wifiManager.resetSettings();
 
+  //sets timeout until configuration portal gets turned off
+  //useful to make it all retry or go to sleep
+  //in seconds
+  wifiManager.setTimeout(20);
+  wifiManager.setBreakAfterConfig(true);
+
   // set callback that gets called when connecting to previous WiFi fails, and
   // enters Access Point mode
   wifiManager.setAPCallback(configModeCallback);
+  
 
   // fetches ssid and pass and tries to connect
   // if it does not connect it starts an access point with the specified name
   // here  "AutoConnectAP"
   // and goes into a blocking loop awaiting configuration
-
   
   if (!wifiManager.autoConnect(hostname)) {
-    DBG_OUTPUT_PORT.println("failed to connect and hit timeout");
-    // reset and try again, or maybe put it to deep sleep
-    ESP.reset();
-    delay(1000);
+    DBG_OUTPUT_PORT.println("failed to connect and hit timeout");  
+    DBG_OUTPUT_PORT.println("No connection made, loading last saved show parameters..");
+    WiFi.forceSleepBegin(); // power down WiFi, as it is not needed anymore.
   }
 
   // if you get here you have connected to the WiFi
-  DBG_OUTPUT_PORT.println("connected...yeey :)");
+  DBG_OUTPUT_PORT.println("get the show started.. :)");
   ticker.detach();
   // keep LED on
   digitalWrite(BUILTIN_LED, LOW);
@@ -496,20 +501,25 @@ server.on("/fire", []() {
   paletteCount = getPaletteCount();
 }
 
+
+
 void loop() {
   EVERY_N_MILLISECONDS(int(float(1000 / settings.fps))) {
     gHue++;  // slowly cycle the "base color" through the rainbow
   }
 
+  // adjust LED current to actual value;
+  FastLED.setMaxPowerInVoltsAndMilliamps(5,settings.max_current);
+
   // Simple statemachine that handles the different modes
   switch (settings.mode) {
     default:
     case OFF: 
-      fill_solid(leds, NUM_LEDS, CRGB(0,0,0));
+      fill_solid(leds, settings.num_leds, CRGB(0,0,0));
       break;
       
     case ALL: 
-      fill_solid(leds, NUM_LEDS,  CRGB(settings.main_color.red, settings.main_color.green,
+      fill_solid(leds, settings.num_leds,  CRGB(settings.main_color.red, settings.main_color.green,
                          settings.main_color.blue));
       break;
 

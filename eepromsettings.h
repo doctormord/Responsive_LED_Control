@@ -42,6 +42,8 @@ typedef struct {
   int8_t palette_ndx = -1; // Palette to use for PALETTE_ANIMS.  -1 is change periodically
   uint8_t confetti_dens = 1;  // Density for the confetti effect.  More confetti needed for longer strings.
   bool glitter_wipe_on = false;
+  uint16_t num_leds = 50; // number of connected leds
+  uint16_t max_current = 1800; // maximum allowed current in milliamperes
   uint8_t filler[46];  // in case adding data in config avoiding loosing current conf by bad crc
   uint16_t crc;
 } EEPROMSettings;
@@ -75,6 +77,8 @@ void loadDefaults() {
   settings.palette_ndx = -1;
   settings.confetti_dens = 1;
   settings.glitter_wipe_on = false;
+  settings.num_leds = 50;
+  settings.max_current = 1800;
 }
 
 bool readSettings(bool clear_on_error) {
@@ -178,6 +182,10 @@ void printSettings() {
                          settings.glitter_color.green, settings.glitter_color.blue);
   DBG_OUTPUT_PORT.printf("palette_ndx:        %d\n", settings.palette_ndx); // selected palette
   DBG_OUTPUT_PORT.printf("confetti_dens:      %d\n", settings.confetti_dens); // selected palette
+  DBG_OUTPUT_PORT.printf("numleds:    %d\n",
+                         settings.num_leds);  // Global variable for number of leds
+  DBG_OUTPUT_PORT.printf("maxcurrent:    %d\n",
+                         settings.max_current);  // Global variable for glitter density                       
 }
 
 void initSettings() {
