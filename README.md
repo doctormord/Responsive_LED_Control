@@ -66,6 +66,7 @@ Forked from Russel, i removed Adafruit Neopixel references and library calls.
 * made the UI more responsive with grouped sections and buttons
 * added some more palettes
 * integrated Arduino OTA
+* included setup of LED-count and maximum allowed LED-current to web-interface and EEprom, so different strings don't need changs in source-code
 
 Large Screen (Desktop)
 
