@@ -2,8 +2,8 @@
 // Griswold LED Lighting Controller
 
 // Griswold is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as 
-// published by the Free Software Foundation, either version 3 of 
+// it under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of
 // the License, or (at your option) any later version.
 
 // This program is distributed in the hope that it will be useful,
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Griswold is a fork of the LEDLAMP project at 
+// Griswold is a fork of the LEDLAMP project at
 //        https://github.com/russp81/LEDLAMP_FASTLEDs
 
 // The LEDLAMP project is a fork of the McLighting Project at
@@ -40,24 +40,23 @@ bool openPaletteFileWithIndex(int index, File* file) {
     if (palette_count == index) break;
     palette_count++;
   }
-  
+
   if (palette_count != index) {
     DBG_OUTPUT_PORT.println("Error, unable to open palette");
     return false;
   }
-  
+
   *file = dir.openFile("r");
   return true; //success
 }
 
 bool loadPaletteFromFile(int index, CRGBPalette16* palette) {
   File paletteFile;
-
   if (!openPaletteFileWithIndex(index, &paletteFile)) {
       DBG_OUTPUT_PORT.printf("Error loading paletteFile at index %d\n", index);
       return false;
   }
-  
+
   int paletteFileSize = paletteFile.size();
   uint8_t* bytes = new uint8_t[paletteFileSize];
   if (!bytes) {
@@ -66,10 +65,10 @@ bool loadPaletteFromFile(int index, CRGBPalette16* palette) {
   }
 
   paletteFile.readBytes((char*)bytes, paletteFileSize);
-  
   DBG_OUTPUT_PORT.printf("Load palette named %s (%d bytes)\n", paletteFile.name(), paletteFileSize);
   paletteFile.close();
- 
+
+
   palette->loadDynamicGradientPalette(bytes);
 
   delete[] bytes;
