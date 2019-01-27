@@ -65,9 +65,9 @@ bool loadPaletteFromFile(int index, CRGBPalette16* palette) {
   }
 
   paletteFile.readBytes((char*)bytes, paletteFileSize);
+  DBG_OUTPUT_PORT.printf("Load palette named %s (%d bytes)\n", paletteFile.name(), paletteFileSize);
   paletteFile.close();
   
-  DBG_OUTPUT_PORT.printf("Load palette named %s (%d bytes)\n", paletteFile.name(), paletteFileSize);
 
   palette->loadDynamicGradientPalette(bytes);
 
