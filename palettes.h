@@ -52,6 +52,7 @@ bool openPaletteFileWithIndex(int index, File* file) {
 
 bool loadPaletteFromFile(int index, CRGBPalette16* palette) {
   File paletteFile;
+
   if (!openPaletteFileWithIndex(index, &paletteFile)) {
       DBG_OUTPUT_PORT.printf("Error loading paletteFile at index %d\n", index);
       return false;
@@ -65,10 +66,10 @@ bool loadPaletteFromFile(int index, CRGBPalette16* palette) {
   }
 
   paletteFile.readBytes((char*)bytes, paletteFileSize);
-  paletteFile.close();
   
   DBG_OUTPUT_PORT.printf("Load palette named %s (%d bytes)\n", paletteFile.name(), paletteFileSize);
-
+  paletteFile.close();
+ 
   palette->loadDynamicGradientPalette(bytes);
 
   delete[] bytes;

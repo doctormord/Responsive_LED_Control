@@ -62,8 +62,8 @@ Ticker ticker;
 
 void tick() {
   // toggle state
-  int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin
-  digitalWrite(BUILTIN_LED, !state);     // set pin to the opposite state
+  int state = digitalRead(LED_BUILTIN);  // get the current state of GPIO1 pin
+  digitalWrite(LED_BUILTIN, !state);     // set pin to the opposite state
 }
 
 // ***************************************************************************
@@ -129,7 +129,7 @@ void setup() {
   DBG_OUTPUT_PORT.printf("system_get_cpu_freq: %d\n", system_get_cpu_freq());
 
   // set builtin led pin as output
-  pinMode(BUILTIN_LED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   // start ticker with 0.5 because we start in AP mode and try to connect
   ticker.attach(0.5, tick);
 
@@ -189,7 +189,7 @@ void setup() {
   DBG_OUTPUT_PORT.println("get the show started.. :)");
   ticker.detach();
   // keep LED on
-  digitalWrite(BUILTIN_LED, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
 
   // ***************************************************************************
   // Setup: ArduinoOTA
@@ -632,13 +632,13 @@ void loop() {
       ticker.attach(0.1, tick);
      
       //EVERY_N_MILLISECONDS(1000) {
-      //  int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin      
-      //  digitalWrite(BUILTIN_LED, !state);
+      //  int state = digitalRead(LED_BUILTIN);  // get the current state of GPIO1 pin      
+      //  digitalWrite(LED_BUILTIN, !state);
       // }
     } else {      
       ticker.detach();
       // Light on-steady indicating WiFi is connected.
-      //digitalWrite(BUILTIN_LED, false);
+      //digitalWrite(LED_BUILTIN, false);
     }
     
   } while (millis() < continueTime);
