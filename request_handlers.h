@@ -121,7 +121,7 @@ char* listStatusJSON() {
   char json[512];
   File file;
   openPaletteFileWithIndex(currentPaletteIndex, &file); 
-  snprintf_P(json, sizeof(json), PSTR("{\"mode\":%d, \"FPS\":%d,\"show_length\":%d, \"ftb_speed\":%d, \"overall_brightness\":%d, \"effect_brightness\":%d, \"color\":[%d, %d, %d], \"glitter_color\":[%d,%d,%d], \"glitter_density\":%d, \"glitter_on\":%d, \"confetti_density\":%d, \"palette_name\": \"%s\", \"glitter_wipe_on\": %d}"), settings.mode, settings.fps, settings.show_length, settings.ftb_speed, settings.overall_brightness, settings.effect_brightness, settings.main_color.red, settings.main_color.green, settings.main_color.blue, settings.glitter_color.red, settings.glitter_color.green, settings.glitter_color.blue, settings.glitter_density, settings.glitter_on, settings.confetti_dens, file.name(), settings.glitter_wipe_on);
+  snprintf_P(json, sizeof(json), PSTR("{\"mode\":%d, \"FPS\":%d,\"show_length\":%d, \"ftb_speed\":%d, \"overall_brightness\":%d, \"effect_brightness\":%d, \"color\":[%d, %d, %d], \"glitter_color\":[%d,%d,%d], \"glitter_density\":%d, \"glitter_on\":%d, \"confetti_density\":%d, \"palette_name\": \"%s\", \"glitter_wipe_on\": %d, \"num_leds\":%d, \"max_current\":%d}"), settings.mode, settings.fps, settings.show_length, settings.ftb_speed, settings.overall_brightness, settings.effect_brightness, settings.main_color.red, settings.main_color.green, settings.main_color.blue, settings.glitter_color.red, settings.glitter_color.green, settings.glitter_color.blue, settings.glitter_density, settings.glitter_on, settings.confetti_dens, file.name(), settings.glitter_wipe_on, settings.num_leds, settings.max_current);
   file.close();
   return json;
 }
@@ -223,6 +223,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   
         settings.num_leds = b;
         DBG_OUTPUT_PORT.printf("WS: Set number of leds to: [%u]\n", settings.num_leds);
+        saveSettings();
         webSocket.sendTXT(num, "OK");
       } 
 
@@ -235,6 +236,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
  
         settings.max_current = b;
         DBG_OUTPUT_PORT.printf("WS: Set LED current to: [%u]\n", settings.max_current);
+        saveSettings();
         webSocket.sendTXT(num, "OK");
       }
 

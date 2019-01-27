@@ -39,7 +39,7 @@ typedef struct {
   // color modes
   LEDState glitter_color;  // Store the "glitter color" of the strip for glitter mode
   uint8_t effect_brightness = 255;  // Brightness used for effect animations
-  int8_t palette_ndx = 0; // Palette to use for PALETTE_ANIMS.  -1 is change periodically
+  int8_t palette_ndx = -1; // Palette to use for PALETTE_ANIMS.  -1 is change periodically
   uint8_t confetti_dens = 1;  // Density for the confetti effect.  More confetti needed for longer strings.
   bool glitter_wipe_on = false;
   uint16_t num_leds = 50; // number of connected leds
@@ -74,7 +74,7 @@ void loadDefaults() {
   settings.glitter_on = false;  // Global to add / remove glitter to any animation
   settings.main_color = { 128, 128, 128};  // Store the "main color" of the strip used in single color modes
   settings.glitter_color = {128, 128, 128};
-  settings.palette_ndx = 0;
+  settings.palette_ndx = -1;
   settings.confetti_dens = 1;
   settings.glitter_wipe_on = false;
   settings.num_leds = 50;

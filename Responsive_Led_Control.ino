@@ -1,7 +1,7 @@
-// Copyright (c) 2016 @jake-b, @russp81, @toblum
-// Griswold LED Lighting Controller
+// Copyright (c) 2016-2019 @doctormord @jake-b, @russp81, @toblum
+// Responsive LED Control
 
-// Griswold is free software: you can redistribute it and/or modify
+// This is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
 // published by the Free Software Foundation, either version 3 of 
 // the License, or (at your option) any later version.
