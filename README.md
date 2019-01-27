@@ -55,6 +55,13 @@ In short you will:
 
 Forked from Russel, i removed Adafruit Neopixel references and library calls.
 
+# Uploading SPIFFS data all at once
+
+Use ESP8266FS Plugin to upload all files from /data to SPIFFS
+
+Arduino ESP8266 filesystem uploader
+https://github.com/esp8266/arduino-esp8266fs-plugin
+
 # Improvements/changes so far:
 
 * new effect: Fire (from WS2812FX)
